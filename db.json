@@ -23,6 +23,12 @@
       "email": "email4@email4.com",
       "senha": "secret4",
       "id": 4
+    },
+    {
+      "nome": "Anderson Rodrigo",
+      "email": "email@email5.com",
+      "senha": "secret5",
+      "id": 5
     }
   ],
   "pets": [
