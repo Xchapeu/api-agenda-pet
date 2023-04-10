@@ -1,27 +1,78 @@
-// JSON Server module
-const jsonServer = require("json-server");
-const server = jsonServer.create();
-const port = process.env.PORT || 8080;
-const router = jsonServer.router("db.json");
+import express from "express";
+import cors from "cors";
+import { prisma } from "./database/prismaClient";
 
-// Make sure to use the default middleware
-const middlewares = jsonServer.defaults({ readonly: false });
+const api = express();
+api.use(cors());
 
-server.use(middlewares);
-// Add this before server.use(router)
-server.use(
-//  // Add custom route here if needed
- jsonServer.rewriter({
-  "/api/*": "/$1",
- })
-);
-server.use(router);
-// Listen to port
-server.listen(port, () => {
- console.log("JSON Server is running on port: ", port);
+api.use(express.json());
+
+const port = process.env.PORT || 5000;
+
+api.get("/users", async (req, res) => {
+    const users = await prisma.user.findMany();
+
+    return res.json(users);
 });
 
-// Export the Server API
-module.exports = server;
+api.post("/users", async (req, res) => {
 
-//integrate nodejs api with postgreSQL?
+    const { nome, email, senha, score, level } = req.body;
+
+    const verifyIfUserExists = await prisma.user.findFirst({
+        where: {
+            email: email
+        }
+    });
+
+    if(verifyIfUserExists) {
+        return res.status(400).json({ error: "Usuário já cadastrado!" })
+    }
+
+    const userCreated = await prisma.user.create({
+        data: {
+            nome: nome,
+            email: email,
+            senha: senha,
+            score: score,
+            level: level
+        },
+    });
+
+    return res.json(userCreated);
+});
+
+api.post("/login", async (req, res) => {
+    const { email, senha } = req.body;
+
+    if(!email || !senha) {
+        return res.status(400).json({ error: "dados não passados" })
+    }
+
+    const userNotRegistered = await prisma.user.findFirst({
+        where: {
+            email: email
+        }
+    });
+
+    if(!userNotRegistered) {
+        return res.status(400).json({ error: "Email não cadastrado!" })
+    }
+
+    const userConfirmed = await prisma.user.findFirst({
+        where: {
+            email: email,
+            AND: {
+                senha: senha
+            }
+        }
+    });
+
+    if(!userConfirmed) {
+        return res.status(400).json({ error: "Email ou senha incorretos!" });
+    }
+
+    return res.json(userConfirmed);
+})
+
+api.listen(port, () => console.log("Server running on port: ", port));

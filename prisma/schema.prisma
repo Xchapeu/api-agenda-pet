@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  nome      String
+  email     String    @unique
+  senha     String
+  level     Int?
+  score     Int?
+  pets      Pet[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  @@map("users")
+}
+
+model Pet {
+  id         Int         @id @default(autoincrement())
+  nome       String
+  raca       String
+  idade      Int
+  sexo       String
+  castracao  Boolean     @default(false)
+  chip       Boolean     @default(false)
+  vermifugos Vermifugo[]
+  vacinas    Vacina[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime?
+
+  tutor   User @relation(fields: [tutorId], references: [id])
+  tutorId Int
+
+  @@map("pets")
+}
+
+model Vermifugo {
+  id        Int       @id @default(autoincrement())
+  data      DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  pet   Pet @relation(fields: [petId], references: [id])
+  petId Int
+
+  @@map("vermifugos")
+}
+
+model Vacina {
+  id           Int            @id @default(autoincrement())
+  puppy        Puppy[]
+  v8           V8[]
+  v10          V10[]
+  antirabica   Antirabica[]
+  gripeCanina  GripeCanina[]
+  giardia      Giardia[]
+  leishmaniose Leishmaniose[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime?
+
+  pet   Pet @relation(fields: [petId], references: [id])
+  petId Int
+
+  @@map("vacinas")
+}
+
+model Puppy {
+  id        Int       @id @default(autoincrement())
+  data      DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  vacina   Vacina @relation(fields: [vacinaId], references: [id])
+  vacinaId Int
+}
+
+model V8 {
+  id        Int       @id @default(autoincrement())
+  data      DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  vacina   Vacina @relation(fields: [vacinaId], references: [id])
+  vacinaId Int
+}
+
+model V10 {
+  id        Int       @id @default(autoincrement())
+  data      DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  vacina   Vacina @relation(fields: [vacinaId], references: [id])
+  vacinaId Int
+}
+
+model Antirabica {
+  id        Int       @id @default(autoincrement())
+  data      DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  vacina   Vacina @relation(fields: [vacinaId], references: [id])
+  vacinaId Int
+}
+
+model GripeCanina {
+  id        Int       @id @default(autoincrement())
+  data      DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  vacina   Vacina @relation(fields: [vacinaId], references: [id])
+  vacinaId Int
+}
+
+model Giardia {
+  id        Int       @id @default(autoincrement())
+  data      DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  vacina   Vacina @relation(fields: [vacinaId], references: [id])
+  vacinaId Int
+}
+
+model Leishmaniose {
+  id        Int       @id @default(autoincrement())
+  data      DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  vacina   Vacina @relation(fields: [vacinaId], references: [id])
+  vacinaId Int
+}
+
+model Raca {
+  id        Int       @id @default(autoincrement())
+  nome      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+}
