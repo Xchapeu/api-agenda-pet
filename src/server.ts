@@ -3,12 +3,11 @@ import cors from "cors";
 import { prisma } from "./database/prismaClient";
 
 const api = express();
+const port = process.env.PORT || 5000;
 api.use(cors());
-
 api.use(express.json());
 
-const port = process.env.PORT || 5000;
-
+//Users Routes
 api.get("/users", async (req, res) => {
     const users = await prisma.user.findMany();
 
@@ -42,11 +41,12 @@ api.post("/users", async (req, res) => {
     return res.json(userCreated);
 });
 
+//Login Route
 api.post("/login", async (req, res) => {
     const { email, senha } = req.body;
 
     if(!email || !senha) {
-        return res.status(400).json({ error: "dados não passados" })
+        return res.status(400).json({ error: "Dados não passados" })
     }
 
     const userNotRegistered = await prisma.user.findFirst({
@@ -73,6 +73,49 @@ api.post("/login", async (req, res) => {
     }
 
     return res.json(userConfirmed);
+});
+
+//Raças Routes
+api.get("/racas", async (req, res) => {
+    const racas = await prisma.raca.findMany();
+    
+    return res.json(racas);
+})
+
+api.post("/racas", async (req, res) => {
+    const { nome } = req.body;
+
+    const verifyIfRacaExists = await prisma.user.findFirst({
+        where: {
+            nome: nome
+        }
+    });
+
+    if(verifyIfRacaExists) {
+        return res.status(400).json({ error: "Raça já cadastrada!" });
+    }
+
+    const racaCreated = await prisma.raca.create({
+        data: {
+            nome: nome
+        }
+    });
+
+    return res.json(racaCreated);
+});
+
+api.delete("/racas/:id", async (req, res) => {
+
+    const id  = req.params.id;
+    const parsedId = parseInt(id);
+
+    await prisma.raca.delete({
+        where: {
+            id: parsedId
+        }
+    });
+
+    return res.json({ message: "Raça Deleteda" })
 })
 
 api.listen(port, () => console.log("Server running on port: ", port));
