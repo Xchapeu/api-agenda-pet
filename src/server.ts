@@ -116,6 +116,62 @@ api.delete("/racas/:id", async (req, res) => {
     });
 
     return res.json({ message: "Raça Deleteda" })
+});
+
+api.get("/:id/pets", async (req, res) => {
+    const tutorId = req.params.id;
+
+    try {
+        const pets = await prisma.pet.findMany({
+            where: {
+                tutorId: parseInt(tutorId)
+            }
+        });
+
+        if(!pets) {
+            return res.json({ message: "Lista de pets vazia!" })
+        }
+    
+        return res.json(pets);
+    } catch (error) {
+        res.json(error)
+    }
+});
+
+api.post("/pets", async (req, res) => {
+    try {
+        const { nome, idade, sexo, raca, chip, castracao, tutorId } = req.body;
+    
+        const verifyIfPetExists = await prisma.pet.findFirst({
+            where: {
+                tutorId: tutorId,
+                AND: {
+                    nome: nome
+                }
+            }
+        });
+    
+        if(verifyIfPetExists) {
+            return res.status(400).json({ error: "Pet já cadastrado!" })
+        }
+    
+        const petCreated = await prisma.pet.create({
+            data: {
+                nome: nome,
+                idade: idade,
+                sexo: sexo,
+                raca: raca,
+                chip: chip,
+                castracao: castracao,
+                tutorId: tutorId 
+            }
+        });
+    
+        return res.json(petCreated);
+    } catch (error) {
+        console.log(error)
+        res.json({ message: error })
+    }
 })
 
 api.listen(port, () => console.log("Server running on port: ", port));
