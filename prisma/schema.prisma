@@ -6,9 +6,10 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
@@ -57,91 +58,15 @@ model Vermifugo {
 }
 
 model Vacina {
-  id           Int            @id @default(autoincrement())
-  puppy        Puppy[]
-  v8           V8[]
-  v10          V10[]
-  antirabica   Antirabica[]
-  gripeCanina  GripeCanina[]
-  giardia      Giardia[]
-  leishmaniose Leishmaniose[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime?
+  id        Int       @id @default(autoincrement())
+  nome      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 
   pet   Pet @relation(fields: [petId], references: [id])
   petId Int
 
   @@map("vacinas")
-}
-
-model Puppy {
-  id        Int       @id @default(autoincrement())
-  data      DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
-
-  vacina   Vacina @relation(fields: [vacinaId], references: [id])
-  vacinaId Int
-}
-
-model V8 {
-  id        Int       @id @default(autoincrement())
-  data      DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
-
-  vacina   Vacina @relation(fields: [vacinaId], references: [id])
-  vacinaId Int
-}
-
-model V10 {
-  id        Int       @id @default(autoincrement())
-  data      DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
-
-  vacina   Vacina @relation(fields: [vacinaId], references: [id])
-  vacinaId Int
-}
-
-model Antirabica {
-  id        Int       @id @default(autoincrement())
-  data      DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
-
-  vacina   Vacina @relation(fields: [vacinaId], references: [id])
-  vacinaId Int
-}
-
-model GripeCanina {
-  id        Int       @id @default(autoincrement())
-  data      DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
-
-  vacina   Vacina @relation(fields: [vacinaId], references: [id])
-  vacinaId Int
-}
-
-model Giardia {
-  id        Int       @id @default(autoincrement())
-  data      DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
-
-  vacina   Vacina @relation(fields: [vacinaId], references: [id])
-  vacinaId Int
-}
-
-model Leishmaniose {
-  id        Int       @id @default(autoincrement())
-  data      DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
-
-  vacina   Vacina @relation(fields: [vacinaId], references: [id])
-  vacinaId Int
 }
 
 model Raca {

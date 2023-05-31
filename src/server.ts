@@ -104,18 +104,22 @@ api.post("/racas", async (req, res) => {
     return res.json(racaCreated);
 });
 
-api.delete("/racas/:id", async (req, res) => {
+api.delete("/racas/:id", async (req, res, next) => {
 
-    const id  = req.params.id;
-    const parsedId = parseInt(id);
+    try {
+        const id  = req.params.id;
+        const parsedId = parseInt(id);
 
-    await prisma.raca.delete({
-        where: {
-            id: parsedId
-        }
-    });
+        await prisma.raca.delete({
+            where: {
+                id: parsedId
+            }
+        });
 
-    return res.json({ message: "Raça Deleteda" })
+        return res.json({ message: "Raça Deleteda" });
+    } catch(err) {
+        next(err)
+    }
 });
 
 api.get("/:id/pets", async (req, res) => {
@@ -171,6 +175,16 @@ api.post("/pets", async (req, res) => {
     } catch (error) {
         console.log(error)
         res.json({ message: error })
+    }
+})
+
+api.get("/vacinas", async (req, res, next) => {
+    try {
+        const vacinas = await prisma.vacina.findMany();
+
+        return res.json(vacinas);
+    } catch (error) {
+        next(error);
     }
 })
 
