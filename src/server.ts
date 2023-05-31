@@ -78,8 +78,10 @@ api.post("/login", async (req, res) => {
 //Raças Routes
 api.get("/racas", async (req, res) => {
     const racas = await prisma.raca.findMany();
+
+    const sortedRacas = racas.sort((a, b) => a.nome > b.nome ? 1 : -1);
     
-    return res.json(racas);
+    return res.json(sortedRacas);
 })
 
 api.post("/racas", async (req, res) => {
